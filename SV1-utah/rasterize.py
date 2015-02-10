@@ -58,7 +58,7 @@ def load_obj_file(filename):
 
 
 def main():
-    objs = load_obj_file('wt_teapot.obj')
+    obj = load_obj_file('wt_teapot.obj')['teapot.005']
 
 if __name__ == '__main__':
     main()
