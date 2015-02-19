@@ -1,4 +1,5 @@
 from operator import methodcaller
+from operator import itemgetter
 # from tkinter import Tk, Canvas, Frame, BOTH
 import numpy as np
 # import matplotlib
@@ -58,11 +59,22 @@ def draw_line(u, v):
             y_0 += s_y
 
 
+def is_flat_line(pt_a, pt_b, pt_c, tolerance=.5):
+    v_ab = pt_b - pt_a
+    v_ac = pt_c - pt_a
+    s = np.dot(v_ab, v_ac) / float(np.sum(v_ab ** 2))
+    if s < 0 or s > 1:
+        return False
+    pt_p = (1. - s) * pt_a + s * pt_b
+    v_cp = pt_p - pt_c
+    return np.linalg.norm(v_cp) < tolerance
+
+
 class Bezier(object):
     """Bezier Curve - defined by two end points and two control points."""
     def __init__(self, pts):
         if len(pts) != 4:
-            raise ValueError
+            raise ValueError(len(pts))
         self.pts = [np.array(pt) for pt in pts]
 
     def get(self, t):
@@ -75,6 +87,23 @@ class Bezier(object):
             + pow(t, 3) * self.pts[3]
         )
 
+    def split(self):
+        pts_q = [self.pts[0],
+                 self.pts[0] / 2. + self.pts[1] / 2.,
+                 self.pts[0] / 4. + self.pts[1] / 2. + self.pts[2] / 4.,
+                 self.pts[0] / 8. + self.pts[1] * 3. / 8. + self.pts[2] * 3. / 8. + self.pts[3] / 8.]
+        pts_r = [self.pts[0] / 8. + self.pts[1] * 3. / 8. + self.pts[2] * 3. / 8. + self.pts[3] / 8.,
+                 self.pts[1] / 4. + self.pts[2] / 2. + self.pts[3] / 4.,
+                 self.pts[2] / 2. + self.pts[3] / 2.,
+                 self.pts[3]]
+        print pts_q
+        print pts_r
+        return Bezier(pts_q), Bezier(pts_r)
+
+    def is_flat(self, tolerance=.5):
+        return (is_flat_line(*itemgetter(0, 3, 1)(self.pts), tolerance=tolerance) and
+                is_flat_line(*itemgetter(0, 3, 2)(self.pts), tolerance=tolerance))
+
 
 def draw_bezier_it(bz):
     u = bz.get(.0)
@@ -84,6 +113,15 @@ def draw_bezier_it(bz):
         print v
         draw_line(u, v)
         u = v
+
+
+def draw_bezier_adaptive(bz, tolerance):
+    if bz.is_flat(tolerance=tolerance):
+        draw_line(bz.pts[0], bz.pts[3])
+    else:
+        bzs = bz.split()
+        for bn in bzs:
+            draw_bezier_adaptive(bn, tolerance)
 
 
 def rescale_point((x, y)):
@@ -96,6 +134,7 @@ def rescale_point((x, y)):
 
 def main():
     mid_point_circle((175, 175), 150)
+    print is_flat_line(np.array([0, 1]), np.array([5, 1]), np.array([4, 1]))
     w = png.Writer(screen_dims[0], screen_dims[1], greyscale=True)
     with open('sv2.png', 'wb') as f:
         w.write(f, np.flipud(frame_buffer))
