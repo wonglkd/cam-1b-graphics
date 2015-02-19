@@ -6,9 +6,9 @@ import numpy as np
 import png
 from pprint import pprint
 
-screen_dims = (350, 350)
 canvas_size = (300, 300)
-# frame_buffer = np.zeros((screen_dims[0], screen_dims[1], 3), dtype=np.uint8)
+canvas_height, canvas_width = canvas_size
+screen_dims = (canvas_size[0] + 50, canvas_size[1] + 50)
 frame_buffer = np.ones(screen_dims, dtype=np.uint8) * 255
 
 
