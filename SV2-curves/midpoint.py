@@ -37,6 +37,55 @@ def mid_point_circle(centre, radius):
             radius_error += 2 * (y - x) + 1
 
 
+def draw_line(u, v):
+    x_0, y_0 = map(int, u)
+    x_1, y_1 = map(int, v)
+    d_x = abs(x_1 - x_0)
+    d_y = abs(y_1 - y_0)
+    s_x = 1 if x_0 < x_1 else -1
+    s_y = 1 if y_0 < y_1 else -1
+    err = d_x - d_y
+    while True:
+        draw_pixel(x_0, y_0)
+        if x_0 == x_1 and y_0 == y_1:
+            break
+        e2 = 2 * err
+        if e2 > -d_y:
+            err -= d_y
+            x_0 += s_x
+        if e2 < d_x:
+            err += d_x
+            y_0 += s_y
+
+
+class Bezier(object):
+    """Bezier Curve - defined by two end points and two control points."""
+    def __init__(self, pts):
+        if len(pts) != 4:
+            raise ValueError
+        self.pts = [np.array(pt) for pt in pts]
+
+    def get(self, t):
+        if not (.0 <= t and t <= 1.):
+            raise ValueError
+        return tuple(
+            pow(1 - t, 3) * self.pts[0]
+            + 3 * t * pow(1 - t, 2) * self.pts[1]
+            + 3 * pow(t, 2) * (1 - t) * self.pts[2]
+            + pow(t, 3) * self.pts[3]
+        )
+
+
+def draw_bezier_it(bz):
+    u = bz.get(.0)
+    for t in xrange(5, 100, 5):
+        t /= 100.
+        v = bz.get(t)
+        print v
+        draw_line(u, v)
+        u = v
+
+
 def rescale_point((x, y)):
     y *= canvas_size[1]/2.
     y += canvas_size[1]/2.
