@@ -3,6 +3,7 @@ import numpy as np
 
 dimensions = (350, 350)
 canvas_size = (300, 300)
+canvas_height, canvas_width = canvas_size
 
 frame_buffer = np.ones(dimensions, dtype=np.uint8) * 255
 

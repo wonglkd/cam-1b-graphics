@@ -8,7 +8,7 @@ Polygon rasterizer and shader.
 """
 import obj_file
 import screen
-import draw
+import triangle
 import numpy as np
 from pprint import pprint
 
@@ -19,7 +19,7 @@ def rasterize_triangle(face):
     # strip z value
     vertices = [v[:2] for v in vertices]
     vertices = map(screen.rescale_point, vertices)
-    draw.triangle(vertices)
+    triangle.draw(vertices)
 
 
 def main():
