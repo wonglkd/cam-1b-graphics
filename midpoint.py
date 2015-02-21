@@ -59,6 +59,60 @@ def draw_line(u, v):
             y_0 += s_y
 
 
+def draw_line_midpoint(u, v):
+    x_0, y_0 = u
+    x_1, y_1 = v
+
+    d_x = abs(x_1 - x_0)
+    d_y = abs(y_1 - y_0)
+    a = y_1 - y_0
+    b = -(x_1 - x_0)
+    c = x_1 * y_0 - x_0 * y_1
+    x = round(x_0)
+    y = round((-a * x - c) / b)
+    dx = 1 if x_0 < x_1 else -1
+    dy = 1 if y_0 < y_1 else -1
+    d = a * (x + dx) + b * (y + .5 * dy) + c
+
+    while x <= round(x_1):
+        draw_pixel(x, y)
+        if d < 0:
+            d += a
+        else:
+            d += a + b
+            y += dy
+        x += dx
+
+
+def draw_line_midpoint_first_oct(u, v):
+    x_0, y_0 = u
+    x_1, y_1 = v
+
+    a = y_1 - y_0
+    b = -(x_1 - x_0)
+    c = x_1 * y_0 - x_0 * y_1
+    x = round(x_0)
+    y = round((-a * x - c) / b)
+    if abs(b) >= abs(a):
+        dx, dy = 1., .5
+    else:
+        dx, dy = .5, 1.
+    if x_0 > x_1:
+        dx *= -1.
+    if y_0 > y_1:
+        dy *= -1
+    d = a * (x + dx) + b * (y + dy) + c
+
+    while True:
+        draw_pixel(x, y)
+        if d < 0:
+            d += a
+        else:
+            d += a + b
+            y += dy
+        x += dx
+
+
 def is_flat_line(pt_a, pt_b, pt_c, tolerance=.5):
     v_ab = pt_b - pt_a
     v_ac = pt_c - pt_a
@@ -96,8 +150,6 @@ class Bezier(object):
                  self.pts[1] / 4. + self.pts[2] / 2. + self.pts[3] / 4.,
                  self.pts[2] / 2. + self.pts[3] / 2.,
                  self.pts[3]]
-        print pts_q
-        print pts_r
         return Bezier(pts_q), Bezier(pts_r)
 
     def is_flat(self, tolerance=.5):
@@ -132,8 +184,21 @@ def rescale_point((x, y)):
     return x, y
 
 
-def main():
-    mid_point_circle((175, 175), 150)
+    def main():
+        # mid_point_circle((175, 175), 150)
+        # draw_line_midpoint((0, 0), (150, 150))
+        # draw_line_midpoint((0, 0), (150, 100))
+        # draw_line_midpoint((0, 0), (100, 150))
+        # draw_line((0, 0), (150, 100))
+        # draw_line((0, 0), (100, 150))
+        # draw_line_midpoint((150, 150), (10, 0))
+        # draw_line_midpoint((0, 150), (150, 0))
+        bz = Bezier([(5, 5), (100, 100), (200, 100), (300, 5)])
+        # draw_bezier_it(bz)
+        # draw_bezier_it(bz2)
+        bz2 = Bezier([(1, 1), (2 * canvas_height, 1), (-canvas_height, canvas_width - 1), (canvas_height - 1, canvas_width - 1)])
+        for epi in (33., 10., 3.3, 1., .33):
+            draw_bezier_adaptive(bz2, tolerance=epi)
     print is_flat_line(np.array([0, 1]), np.array([5, 1]), np.array([4, 1]))
     w = png.Writer(screen_dims[0], screen_dims[1], greyscale=True)
     with open('sv2.png', 'wb') as f:

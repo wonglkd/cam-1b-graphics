@@ -12,4 +12,4 @@ testdata = [
 
 @pytest.mark.parametrize("pts,expected", testdata)
 def test_flat(pts, expected):
-    assert midpoint.is_flat(*map(np.array, pts)) == expected
+    assert midpoint.is_flat_line(*map(np.array, pts)) == expected
