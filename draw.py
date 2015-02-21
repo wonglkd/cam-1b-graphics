@@ -1,5 +1,8 @@
+import screen
+import numpy as np
 
-def draw_line(v, u):
+
+def line(v, u):
     x_0, y_0 = v
     x_1, y_1 = u
     if x_1 - x_0 == 0:
@@ -17,10 +20,9 @@ def draw_line(v, u):
 
     y = round(y_i)
     y_f = y_i - y
-   
 
     while x <= round(x_1):
-        draw_pixel(x, y)
+        screen.draw_pixel(x, y)
         x += 1
         y_f += m
         if y_f > .5:
@@ -28,15 +30,15 @@ def draw_line(v, u):
             y_f -= 1
 
 
-def draw_triangle(vertices):
+def triangle(vertices):
     v1, v2, v3 = vertices
     vs1 = v2[0]-v1[0], v2[1]-v1[1]
     vs2 = v3[0]-v1[0], v3[1]-v1[1]
 
     for v in vertices:
-        draw_pixel(*v)
+        screen.draw_pixel(*v)
     for v, u in zip(vertices, vertices[1:] + [vertices[0]]):
-        draw_line(v, u)
+        line(v, u)
     return
 
     # calculate bounding box
@@ -53,6 +55,4 @@ def draw_triangle(vertices):
             n2 = float(np.cross(vs1, v)) / np.cross(vs1, vs2)
 
             if n1 >= 0 and n2 >= 0 and n1 + n2 <= 1:
-                draw_pixel(i, j)
-
-
+                screen.draw_pixel(i, j)
