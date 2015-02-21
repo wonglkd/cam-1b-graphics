@@ -44,7 +44,7 @@ def load(filename):
                 # faces - using vertex indices (e.g. 34//1 1243//2 593//3)
                 if '//' in line[1]:
                     face = map(methodcaller('split', '//'), line[1:4])
-                    face = map(lambda x: map(int, x), face)
+                    face = map(lambda x: map(lambda y: int(y) - 1, x), face)
                 else:
                     raise NotImplementedError
                 curr_obj.faces.append(face)
