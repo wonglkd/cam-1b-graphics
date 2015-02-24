@@ -28,7 +28,7 @@ class RayTracer(object):
 
         """ Return colour of object at closest intersection point """
         # Solid colour as a stopgap
-        return np.ones(3) * 255
+        return np.ones(3)
         # shading
         # calculate normal to object at intersection point
         # shoot rays from point to light sources
@@ -43,11 +43,11 @@ def main():
     scene = []
     # scene.append(Sphere(radius=1., position=(0, 0, 0)))
     # scene.append(Sphere(radius=2., position=(4, 5, 0)))
-    scene.append(Sphere(radius=5., position=(100, 100, 5)))
+    scene.append(Sphere(radius=7., position=(0., 0., 10)))
     rt.set_scene(scene)
 
     # 2. Model sources of illumination
-    rt.light_sources = [Light(position=(0, 0, 10), colour=(1, 1, 1))]
+    rt.light_sources = [Light(position=(0, 0, 10), colour=(1., 1., 1.))]
     rt.light_ambient = 0.05
 
     # 3. Trace a ray to find its intersection with the nearest surface

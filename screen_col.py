@@ -11,7 +11,7 @@ frame_buffer = np.zeros((dimensions[0], dimensions[1] * 3), dtype=np.uint8)
 def draw_pixel_col(x, y, colour):
     try:
         # print x, y, colour
-        frame_buffer[y, (x*3): ((x+1)*3)] = colour
+        frame_buffer[y, (x*3): ((x+1)*3)] = colour * 255
     except IndexError:
         print "Point out of canvas", (x, y)
 
