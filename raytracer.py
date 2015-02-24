@@ -42,11 +42,9 @@ class RayTracer(object):
                                       towards=light.pos).normalized()
             """ calculate diffuse reflections off objects at that point """
             # diffuse
-            intensity = norm_at_intersect.direction.dot(ray_intersect_light.direction)
-            # intensity = ray_intersect_light.direction.dot(norm_at_intersect.direction)
-            # TODO: should the dot product be negative?
-            intensity = np.absolute(intensity)
-            # intensity = max(-intensity, 0.)
+            intensity = (norm_at_intersect.direction
+                         .dot(ray_intersect_light.direction))
+            intensity = max(intensity, 0.)
             colour += intensity * closest_obj.colour
 
             """ calculate specular reflections off objects at that point """
@@ -68,7 +66,8 @@ def main():
     rt.set_scene(scene)
 
     # 2. Model sources of illumination
-    rt.light_sources = [Light(position=(0, 0, 10), colour=(1., 1., 1.))]
+    # rt.light_sources = [Light(position=(1, 0, 0), colour=(1., 1., 1.))]
+    rt.light_sources = [Light(position=(-1, 0, 2), colour=(1., 1., 1.))]
     rt.light_ambient = 0.05
 
     # 3. Trace a ray to find its intersection with the nearest surface
