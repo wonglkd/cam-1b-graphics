@@ -10,7 +10,7 @@ import numpy as np
 
 class RayTracer(object):
     def __init__(self):
-        # for specular  reflection
+        # for specular reflection
         self.n_roughness = 10
 
     def set_scene(self, scene):
@@ -32,9 +32,6 @@ class RayTracer(object):
             return
 
         """ Shading: return colour of object at closest intersection point """
-        # Solid colour as a stopgap
-        # return closest_obj.colour
-
         # calculate normal to object at intersection point
         intersection_pt = ray.at(s_closest_intersection)
         norm_at_intersect = closest_obj.get_normal_with(intersection_pt)
@@ -54,11 +51,9 @@ class RayTracer(object):
             colour += intensity_diffuse * closest_obj.colour
 
             """ calculate specular reflections off objects at that point """
-            # TODO: specular reflection seems buggy
             v_reflected = -v_i - 2 * -v_i.dot(v_n) * v_n
-            v_viewer = Vector(self.pt_eye - intersection_pt).normalized().direction
+            v_viewer = Vector(self.pt_eye - intersection_pt).normalized().dir
             intensity_specular = max(v_reflected.dot(v_viewer), 0.)
-            # print intensity_specular
             intensity_specular = pow(intensity_specular, self.n_roughness)
             intensity_specular *= closest_obj.coef_specular
             colour += intensity_specular * closest_obj.colour
@@ -117,7 +112,6 @@ def main():
             # 6. Display results on a grid of pixels
             screen.draw_pixel_col(i, j, np.clip(pt_colour, 0., 1.))
 
-    # print screen.frame_buffer
     screen.write('SV3-raytracer/scene.png')
 
 

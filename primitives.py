@@ -18,6 +18,7 @@ class PhysicalObject(object):
 class Vector(object):
     def __init__(self, direction):
         self.direction = np.asarray(direction)
+        self.dir = self.direction
 
     def length(self):
         return np.linalg.norm(self.direction)
