@@ -3,7 +3,7 @@ from primitives import Cube
 from primitives import Cylinder
 from primitives import Light
 from primitives import Ray
-import screen
+import screen_col as screen
 import numpy as np
 
 
@@ -27,6 +27,8 @@ class RayTracer(object):
             return
 
         """ Return colour of object at closest intersection point """
+        # Solid colour as a stopgap
+        return np.ones(3) * 255
         # shading
         # calculate normal to object at intersection point
         # shoot rays from point to light sources
@@ -38,8 +40,10 @@ def main():
     rt = RayTracer()
 
     # 1. Form a scene
-    scene = [Sphere(radius=1., position=(0, 0, 0)),
-             Sphere(radius=2., position=(4, 5, 0))]
+    scene = []
+    # scene.append(Sphere(radius=1., position=(0, 0, 0)))
+    # scene.append(Sphere(radius=2., position=(4, 5, 0)))
+    scene.append(Sphere(radius=5., position=(100, 100, 5)))
     rt.set_scene(scene)
 
     # 2. Model sources of illumination
@@ -55,6 +59,7 @@ def main():
     for x in xrange(screen.canvas_width):
         for y in xrange(screen.canvas_height):
             pt_on_screen = np.array([x, y, 0.])
+            pt_colour = np.zeros(3)
 
             # determine the ray from the eye through the pixel's centre
 
@@ -63,13 +68,21 @@ def main():
 
             ray_eye_to_pixel = Ray(origin=pt_origin,
                                    direction=pt_on_screen - pt_origin)
-            rt.trace_ray(ray_eye_to_pixel)
 
+            # 4. Trace ray from intersection to the sources of illumination
+            # 5. (Optional) reflection, transparency, refraction
             # TODO: super-sampling
+            rt_colour = rt.trace_ray(ray_eye_to_pixel)
+            if rt_colour is not None:
+                pt_colour += rt_colour
 
-    # 4. Trace ray from intersection to the sources of illumination
-    # 5. (Optional) reflection, transparency, refraction
-    # 6. Display results on a grid of pixels
+            # 6. Display results on a grid of pixels
+            screen.draw_pixel_col(x, y, pt_colour)
+
+    # print screen.frame_buffer
+    screen.write('SV3-raytracer/scene.png')
+
+
 
 if __name__ == '__main__':
     main()
