@@ -3,6 +3,7 @@ from primitives import Cube
 from primitives import Cylinder
 from primitives import Light
 from primitives import Ray
+from primitives import Vector
 import screen_col as screen
 import numpy as np
 
@@ -10,7 +11,7 @@ import numpy as np
 class RayTracer(object):
     def __init__(self):
         # for specular  reflection
-        self.n_roughness = 7
+        self.n_roughness = 10
 
     def set_scene(self, scene):
         self.scene = scene
@@ -54,12 +55,11 @@ class RayTracer(object):
 
             """ calculate specular reflections off objects at that point """
             # TODO: specular reflection seems buggy
-            v_reflected = v_i - 2 * v_i.dot(v_n) * v_n
-            v_viewer = self.pt_eye - intersection_pt
+            v_reflected = -v_i - 2 * -v_i.dot(v_n) * v_n
+            v_viewer = Vector(self.pt_eye - intersection_pt).normalized().direction
             intensity_specular = max(v_reflected.dot(v_viewer), 0.)
             # print intensity_specular
             intensity_specular = pow(intensity_specular, self.n_roughness)
-            # print v_reflected.dot(v_viewer)
             intensity_specular *= closest_obj.coef_specular
             colour += intensity_specular * closest_obj.colour
 
