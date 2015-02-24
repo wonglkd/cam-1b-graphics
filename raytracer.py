@@ -20,7 +20,7 @@ class RayTracer(object):
             s_intersect = obj.intersect(ray)
             # if intersection point is closest so far to the eye, save it
             if s_intersect < s_closest_intersection:
-                dist_closest_intersection = s_intersect
+                s_closest_intersection = s_intersect
                 closest_obj = obj
 
         if closest_obj is None:

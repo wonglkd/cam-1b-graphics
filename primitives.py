@@ -34,8 +34,7 @@ class Ray(Vector):
 
 
 class Light(PhysicalObject):
-    def __init__(self, *args, **kwargs):
-        super(Light, self).__init__(*args, **kwargs)
+    pass
 
 
 class Sphere(PhysicalObject):
