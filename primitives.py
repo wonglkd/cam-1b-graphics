@@ -2,8 +2,9 @@ import numpy as np
 
 
 class PhysicalObject(object):
-    def __init__(self, position):
+    def __init__(self, position, colour):
         self.pos = np.asarray(position)
+        self.colour = np.asarray(colour)
 
     def intersect(self, ray):
         raise NotImplementedError
@@ -23,9 +24,8 @@ class Ray(Vector):
 
 
 class Light(PhysicalObject):
-    def __init__(self, colour, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(Light, self).__init__(*args, **kwargs)
-        self.colour = np.asarray(colour)
 
 
 class Sphere(PhysicalObject):
