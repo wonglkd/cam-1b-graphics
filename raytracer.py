@@ -13,9 +13,9 @@ class RayTracer(object):
         # for every object in the scene
         for obj in self.scene:
             if obj.intersect(ray):
-                # if intersection point is closest so far to the eye
-
+                # if intersection point is closest so far to the eye, save it
                 pass
+        # return colour of object at closest intersection point
 
 
 def main():
@@ -38,6 +38,8 @@ def main():
         for y in xrange(screen.canvas_height):
             # determine the ray from the eye through the pixel's centre
             rt.trace_ray(1)
+
+            # TODO: super-sampling
 
     # 4. Trace ray from intersection to the sources of illumination
     # 5. (Optional) reflection, transparency, refraction
