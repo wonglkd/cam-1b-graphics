@@ -5,6 +5,8 @@ class PhysicalObject(object):
     def __init__(self, position, colour):
         self.pos = np.asarray(position)
         self.colour = np.asarray(colour)
+        self.coef_specular = 1.
+        self.coef_diffuse = 1.
 
     def intersect(self, ray):
         raise NotImplementedError
