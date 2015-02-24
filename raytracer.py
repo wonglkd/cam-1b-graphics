@@ -28,15 +28,32 @@ class RayTracer(object):
 
         """ Shading: return colour of object at closest intersection point """
         # Solid colour as a stopgap
-        return closest_obj.colour
+        # return closest_obj.colour
 
         # calculate normal to object at intersection point
         intersection_pt = ray.at(s_closest_intersection)
         norm_at_intersect = closest_obj.get_normal_with(intersection_pt)
 
+        colour = np.zeros(3)
+
         # shoot rays from point to light sources
-        # calculate diffuse and specular reflections off objects at that point
-        # that + ambient illumination gives colour of object
+        for light in self.light_sources:
+            ray_intersect_light = Ray(origin=intersection_pt,
+                                      towards=light.pos).normalized()
+            """ calculate diffuse reflections off objects at that point """
+            # diffuse
+            intensity = norm_at_intersect.direction.dot(ray_intersect_light.direction)
+            # intensity = ray_intersect_light.direction.dot(norm_at_intersect.direction)
+            # TODO: should the dot product be negative?
+            intensity = np.absolute(intensity)
+            # intensity = max(-intensity, 0.)
+            colour += intensity * closest_obj.colour
+
+            """ calculate specular reflections off objects at that point """
+
+        """ that + ambient illumination gives colour of object """
+
+        return colour
 
 
 def main():
@@ -74,7 +91,7 @@ def main():
             pt_origin = pt_eye
 
             ray_eye_to_pixel = Ray(origin=pt_origin,
-                                   direction=pt_on_screen - pt_origin)
+                                   towards=pt_on_screen)
 
             # 4. Trace ray from intersection to the sources of illumination
             # 5. (Optional) reflection, transparency, refraction

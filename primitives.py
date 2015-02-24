@@ -21,12 +21,17 @@ class Vector(object):
         return np.linalg.norm(self.direction)
 
     def normalized(self):
-        return Vector(self.direction / self.length())
+        """ N.B. This modifies the current object. """
+        self.direction /= self.length()
+        return self
+
+    def __repr__(self):
+        return 'Vector(direction={}'.format(self.direction)
 
 
 class Ray(Vector):
-    def __init__(self, origin, *args, **kwargs):
-        super(Ray, self).__init__(*args, **kwargs)
+    def __init__(self, origin, towards, *args, **kwargs):
+        super(Ray, self).__init__(direction=towards - origin, *args, **kwargs)
         self.origin = origin
 
     def at(self, s):
