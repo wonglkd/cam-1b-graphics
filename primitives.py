@@ -6,6 +6,16 @@ class PhysicalObject(object):
         raise NotImplementedError
 
 
+class Vector(object):
+    def __init__(self, origin, direction):
+        self.origin = origin
+        self.direction = direction
+
+
+class Ray(Vector):
+    pass
+
+
 class Light(PhysicalObject):
     def __init__(self, colour, *args, **kwargs):
         super(Light, self).__init__(*args, **kwargs)
