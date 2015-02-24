@@ -53,11 +53,14 @@ def main():
     # 3. Trace a ray to find its intersection with the nearest surface
     # Select eye point and screen plane
     pt_eye = np.array([0., 0., -1.])
-    # plane_screen = ...
+    # x_0, y_0, x_1, y_1
+    plane_screen = [-1., -1., 1., 1.]
+    pts_x = np.linspace(plane_screen[0], plane_screen[2], screen.canvas_width)
+    pts_y = np.linspace(plane_screen[1], plane_screen[3], screen.canvas_height)
 
     # for every pixel in the screen plane
-    for x in xrange(screen.canvas_width):
-        for y in xrange(screen.canvas_height):
+    for i, x in enumerate(pts_x):
+        for j, y in enumerate(pts_y):
             pt_on_screen = np.array([x, y, 0.])
             pt_colour = np.zeros(3)
 
@@ -77,11 +80,10 @@ def main():
                 pt_colour += rt_colour
 
             # 6. Display results on a grid of pixels
-            screen.draw_pixel_col(x, y, pt_colour)
+            screen.draw_pixel_col(i, j, pt_colour)
 
     # print screen.frame_buffer
     screen.write('SV3-raytracer/scene.png')
-
 
 
 if __name__ == '__main__':
