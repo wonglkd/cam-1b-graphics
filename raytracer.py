@@ -12,25 +12,28 @@ class RayTracer(object):
         self.scene = scene
 
     def trace_ray(self, ray):
-        dist_closest_intersection = np.inf
+        s_closest_intersection = np.inf
         closest_obj = None
 
         """ Find closest intersection point to eye """
         for obj in self.scene:
-            dist_intersect = obj.intersect(ray)
+            s_intersect = obj.intersect(ray)
             # if intersection point is closest so far to the eye, save it
-            if dist_intersect < dist_closest_intersection:
-                dist_closest_intersection = dist_intersect
+            if s_intersect < s_closest_intersection:
+                dist_closest_intersection = s_intersect
                 closest_obj = obj
 
         if closest_obj is None:
             return
 
-        """ Return colour of object at closest intersection point """
+        """ Shading: return colour of object at closest intersection point """
         # Solid colour as a stopgap
         return closest_obj.colour
-        # shading
+
         # calculate normal to object at intersection point
+        intersection_pt = ray.at(s_closest_intersection)
+        norm_at_intersect = closest_obj.get_normal_with(intersection_pt)
+
         # shoot rays from point to light sources
         # calculate diffuse and specular reflections off objects at that point
         # that + ambient illumination gives colour of object

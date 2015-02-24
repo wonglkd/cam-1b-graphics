@@ -9,18 +9,28 @@ class PhysicalObject(object):
     def intersect(self, ray):
         raise NotImplementedError
 
+    def get_normal_with(self, point):
+        raise NotImplementedError
+
 
 class Vector(object):
-    def __init__(self, origin, direction):
-        self.origin = origin
-        self.direction = direction
+    def __init__(self, direction):
+        self.direction = np.asarray(direction)
 
     def length(self):
         return np.linalg.norm(self.direction)
 
+    def normalized(self):
+        return Vector(self.direction / self.length())
+
 
 class Ray(Vector):
-    pass
+    def __init__(self, origin, *args, **kwargs):
+        super(Ray, self).__init__(*args, **kwargs)
+        self.origin = origin
+
+    def at(self, s):
+        return self.origin + s * self.direction
 
 
 class Light(PhysicalObject):
@@ -33,7 +43,7 @@ class Sphere(PhysicalObject):
         super(Sphere, self).__init__(*args, **kwargs)
         self.radius = radius
 
-    def intersect(self, ray):
+    def intersect(self, ray, return_dist=False):
         """
         Intersection math.
         P = O + sD, s >= 0
@@ -56,8 +66,15 @@ class Sphere(PhysicalObject):
             return np.inf
         d = np.sqrt(d)
         s = min((-b + d) / (2 * a), (-b - d) / (2 * a))
-        dist_intersect = s * ray.length()
-        return dist_intersect
+        if return_dist:
+            dist_intersect = s * ray.length()
+            return dist_intersect
+        else:
+            return s
+
+    def get_normal_with(self, point):
+        vec_pt_centre = Vector(point - self.pos)
+        return vec_pt_centre.normalized()
 
 
 class Cube(PhysicalObject):
