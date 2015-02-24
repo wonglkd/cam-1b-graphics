@@ -41,15 +41,16 @@ class RayTracer(object):
             ray_intersect_light = Ray(origin=intersection_pt,
                                       towards=light.pos).normalized()
             """ calculate diffuse reflections off objects at that point """
-            # diffuse
             intensity = (norm_at_intersect.direction
                          .dot(ray_intersect_light.direction))
             intensity = max(intensity, 0.)
             colour += intensity * closest_obj.colour
 
             """ calculate specular reflections off objects at that point """
+            # vec_reflection = norm_at_intersect.direction - 
 
         """ that + ambient illumination gives colour of object """
+        colour += self.light_ambient
 
         return colour
 
@@ -68,7 +69,7 @@ def main():
     # 2. Model sources of illumination
     # rt.light_sources = [Light(position=(1, 0, 0), colour=(1., 1., 1.))]
     rt.light_sources = [Light(position=(-1, 0, 2), colour=(1., 1., 1.))]
-    rt.light_ambient = 0.05
+    rt.light_ambient = 0.02 * np.ones(3)
 
     # 3. Trace a ray to find its intersection with the nearest surface
     # Select eye point and screen plane
@@ -100,7 +101,7 @@ def main():
                 pt_colour += rt_colour
 
             # 6. Display results on a grid of pixels
-            screen.draw_pixel_col(i, j, pt_colour)
+            screen.draw_pixel_col(i, j, np.clip(pt_colour, 0., 1.))
 
     # print screen.frame_buffer
     screen.write('SV3-raytracer/scene.png')
