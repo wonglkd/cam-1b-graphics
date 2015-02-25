@@ -5,8 +5,8 @@ class PhysicalObject(object):
     def __init__(self, position, colour):
         self.pos = np.asarray(position)
         self.colour = np.asarray(colour)
-        self.coef_specular = .5
-        self.coef_diffuse = .5
+        self.coef_specular = 1.
+        self.coef_diffuse = 1.
 
     def intersect(self, ray):
         raise NotImplementedError
@@ -115,3 +115,8 @@ class Cylinder(PhysicalObject):
         return min(sols + [np.inf])
         # return min(solve(a, b, c))
         # sols = [s for s in solve(a, b, c) if ray.at(s)[2] ]
+    
+    def get_normal_with(self, point):
+        vec_pt_centre = Vector(point - self.pos)
+        vec_pt_centre.direction[1] = 0.
+        return vec_pt_centre.normalized()

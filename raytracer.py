@@ -32,7 +32,9 @@ class RayTracer(object):
             return
 
         """ Shading: return colour of object at closest intersection point """
-        return closest_obj.colour
+        # first-cut
+        # return closest_obj.colour
+
         # calculate normal to object at intersection point
         intersection_pt = ray.at(s_closest_intersection)
         norm_at_intersect = closest_obj.get_normal_with(intersection_pt)
