@@ -33,16 +33,30 @@ class Vector(object):
 
 
 class Ray(Vector):
-    def __init__(self, origin, towards, *args, **kwargs):
-        super(Ray, self).__init__(direction=towards - origin, *args, **kwargs)
+    def __init__(self, origin, *args, **kwargs):
+        if 'towards' in kwargs:
+            kwargs['direction'] = kwargs.pop('towards') - origin
+        super(Ray, self).__init__(*args, **kwargs)
         self.origin = origin
 
     def at(self, s):
         return self.origin + s * self.direction
 
+    def __repr__(self):
+        return 'Ray(origin={}, direction={}'.format(self.origin, self.direction)
+
 
 class Light(PhysicalObject):
     pass
+
+
+def solve(a, b, c):
+    """ Solve a quadratic equation. """
+    d = pow(b, 2) - 4 * a * c
+    if d < 0:
+        return [np.inf]
+    d = np.sqrt(d)
+    return [(-b + d) / (2 * a), (-b - d) / (2 * a)]
 
 
 class Sphere(PhysicalObject):
@@ -50,7 +64,7 @@ class Sphere(PhysicalObject):
         super(Sphere, self).__init__(*args, **kwargs)
         self.radius = radius
 
-    def intersect(self, ray, return_dist=False):
+    def intersect(self, ray):
         """
         Intersection math.
         P = O + sD, s >= 0
@@ -68,16 +82,7 @@ class Sphere(PhysicalObject):
         b = 2. * ray.direction.dot(ray.origin - self.pos)
         o_minus_c = ray.origin - self.pos
         c = o_minus_c.dot(o_minus_c) - pow(self.radius, 2)
-        d = pow(b, 2) - 4 * a * c
-        if d < 0:
-            return np.inf
-        d = np.sqrt(d)
-        s = min((-b + d) / (2 * a), (-b - d) / (2 * a))
-        if return_dist:
-            dist_intersect = s * ray.length()
-            return dist_intersect
-        else:
-            return s
+        return min(solve(a, b, c))
 
     def get_normal_with(self, point):
         vec_pt_centre = Vector(point - self.pos)
@@ -95,3 +100,18 @@ class Cylinder(PhysicalObject):
         super(Cylinder, self).__init__(*args, **kwargs)
         self.radius = radius
         self.height = height
+
+    def intersect(self, ray):
+        # translate by position
+        # print self.pos
+        a = (ray.dir[[0, 2]] ** 2).sum()
+        b = ray.dir[[0, 2]].dot(ray.origin[[0, 2]] - self.pos[[0, 2]]) * 2
+        c = ((ray.origin[[0, 2]] - self.pos[[0, 2]]) ** 2).sum() - self.radius ** 2
+        # print a, b, c
+        # print ray.origin, ray.direction
+        in_bounds = lambda y: self.pos[1] - self.height/2. <= y and y <= self.pos[1] + self.height/2.
+        sols = [s for s in solve(a, b, c) if s >= 0 and in_bounds(ray.at(s)[1])]
+        # print sols
+        return min(sols + [np.inf])
+        # return min(solve(a, b, c))
+        # sols = [s for s in solve(a, b, c) if ray.at(s)[2] ]

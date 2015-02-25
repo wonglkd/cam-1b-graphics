@@ -32,6 +32,7 @@ class RayTracer(object):
             return
 
         """ Shading: return colour of object at closest intersection point """
+        return closest_obj.colour
         # calculate normal to object at intersection point
         intersection_pt = ray.at(s_closest_intersection)
         norm_at_intersect = closest_obj.get_normal_with(intersection_pt)
@@ -73,6 +74,7 @@ def main():
     # scene.append(Sphere(radius=2., position=(4, 5, 0)))
     scene.append(Sphere(radius=2., position=[-1.5, 0., 5], colour=[1, 0, 0]))
     scene.append(Sphere(radius=2., position=[1.5, 0., 6], colour=[0, 1, 0]))
+    scene.append(Cylinder(radius=2., position=[0., 0., 4], height=1., colour=[0, 0, 1]))
     rt.set_scene(scene)
 
     # 2. Model sources of illumination
