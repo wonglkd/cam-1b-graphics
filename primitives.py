@@ -6,11 +6,17 @@ def normalize(vector):
 
 
 class PhysicalObject(object):
-    def __init__(self, position, colour):
+    def __init__(self,
+                 position,
+                 colour,
+                 reflection=.5,
+                 specular=1.,
+                 diffuse=1.):
         self.pos = np.asarray(position)
         self.colour = np.asarray(colour)
-        self.coef_specular = 1.
-        self.coef_diffuse = 1.
+        self.coef_specular = specular
+        self.coef_diffuse = diffuse
+        self.coef_reflection = reflection
 
     def intersect(self, ray):
         raise NotImplementedError
@@ -45,6 +51,12 @@ class Ray(Vector):
 
     def at(self, s):
         return self.origin + s * self.direction
+
+    def reflected(self, pt, normal):
+        v_i = self.dir
+        v_n = normal.direction
+        v_reflected = -v_i - 2 * -v_i.dot(v_n) * v_n
+        return Ray(origin=pt, direction=v_reflected)
 
     def __repr__(self):
         return 'Ray(origin={}, direction={}'.format(self.origin, self.direction)
@@ -97,6 +109,9 @@ class Cube(PhysicalObject):
     def __init__(self, length, *args, **kwargs):
         super(Cube, self).__init__(*args, **kwargs)
         self.length = length
+
+    def intersect(self, ray):
+        return np.inf
 
 
 class Cylinder(PhysicalObject):

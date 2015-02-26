@@ -76,7 +76,23 @@ class RayTracer(object):
         """ that + ambient illumination gives colour of object """
         colour += self.light_ambient
 
-        return colour
+        return colour, closest_obj, ray.reflected(intersection_pt, norm_at_intersect)
+
+    def trace_ray_with_reflection(self, orig_ray, n_reflections=5):
+        pt_colour = np.zeros(3)
+        curr_ray = orig_ray
+        reflection_idx = 1.
+        for _ in xrange(n_reflections):
+            # trace ray
+            r_result = self.trace_ray(curr_ray)
+            if r_result is None:
+                break
+            r_colour, closest_obj, reflected_ray = r_result
+            pt_colour += r_colour * reflection_idx
+            reflection_idx *= closest_obj.coef_reflection
+            curr_ray = reflected_ray
+
+        return pt_colour
 
 
 def main():
@@ -123,7 +139,7 @@ def main():
             # 4. Trace ray from intersection to the sources of illumination
             # 5. (Optional) reflection, transparency, refraction
             # TODO: super-sampling
-            rt_colour = rt.trace_ray(ray_eye_to_pixel)
+            rt_colour = rt.trace_ray_with_reflection(ray_eye_to_pixel)
             if rt_colour is not None:
                 pt_colour += rt_colour
 
