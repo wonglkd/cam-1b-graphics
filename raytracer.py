@@ -71,7 +71,7 @@ class RayTracer(object):
             intensity_specular = max(v_reflected.dot(v_viewer), 0.)
             intensity_specular = pow(intensity_specular, self.n_roughness)
             intensity_specular *= closest_obj.coef_specular
-            colour += intensity_specular * closest_obj.colour
+            colour += intensity_specular * light.colour
 
         """ that + ambient illumination gives colour of object """
         colour += self.light_ambient
