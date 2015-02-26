@@ -102,20 +102,18 @@ class Cylinder(PhysicalObject):
         self.height = height
 
     def intersect(self, ray):
-        # translate by position
-        # print self.pos
-        a = (ray.dir[[0, 2]] ** 2).sum()
-        b = ray.dir[[0, 2]].dot(ray.origin[[0, 2]] - self.pos[[0, 2]]) * 2
-        c = ((ray.origin[[0, 2]] - self.pos[[0, 2]]) ** 2).sum() - self.radius ** 2
-        # print a, b, c
-        # print ray.origin, ray.direction
-        in_bounds = lambda y: self.pos[1] - self.height/2. <= y and y <= self.pos[1] + self.height/2.
-        sols = [s for s in solve(a, b, c) if s >= 0 and in_bounds(ray.at(s)[1])]
-        # print sols
+        """ open cylinder. TODO: lids. """
+        dir_xz = ray.dir[[0, 2]]
+        origin_xz = ray.origin[[0, 2]]
+        pos_xz = self.pos[[0, 2]]
+        a = (dir_xz ** 2).sum()
+        b = dir_xz.dot(origin_xz - pos_xz) * 2
+        c = ((origin_xz - pos_xz) ** 2).sum() - self.radius ** 2
+        in_bounds = lambda y: (self.pos[1] - self.height/2. <= y
+                               and y <= self.pos[1] + self.height/2.)
+        sols = [s for s in solve(a, b, c) if s > 0 and in_bounds(ray.at(s)[1])]
         return min(sols + [np.inf])
-        # return min(solve(a, b, c))
-        # sols = [s for s in solve(a, b, c) if ray.at(s)[2] ]
-    
+
     def get_normal_with(self, point):
         vec_pt_centre = Vector(point - self.pos)
         vec_pt_centre.direction[1] = 0.
