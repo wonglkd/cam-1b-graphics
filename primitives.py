@@ -1,6 +1,10 @@
 import numpy as np
 
 
+def normalize(vector):
+    return np.linalg.norm(vector)
+
+
 class PhysicalObject(object):
     def __init__(self, position, colour):
         self.pos = np.asarray(position)
@@ -21,7 +25,7 @@ class Vector(object):
         self.dir = self.direction
 
     def length(self):
-        return np.linalg.norm(self.direction)
+        return normalize(self.direction)
 
     def normalized(self):
         """ N.B. This modifies the current object. """

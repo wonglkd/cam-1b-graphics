@@ -44,7 +44,19 @@ class RayTracer(object):
         # shoot rays from point to light sources
         for light in self.light_sources:
             ray_intersect_light = Ray(origin=intersection_pt,
-                                      towards=light.pos).normalized()
+                                      towards=light.pos)
+            intersect_light_length = ray_intersect_light.length()
+            ray_intersect_light = ray_intersect_light.normalized()
+
+            # Check for shadows
+            s_other_objs = [obj.intersect(ray_intersect_light)
+                            for obj in self.scene if obj != closest_obj]
+            # Remove objects that are behind
+            s_other_objs = [s for s in s_other_objs if s > 0] + [np.inf]
+            if min(s_other_objs) < intersect_light_length:
+                # print min(s_other_objs), intersect_light_length
+                continue
+
             v_i = ray_intersect_light.direction
             v_n = norm_at_intersect.direction
             """ calculate diffuse reflections off objects at that point """
@@ -75,14 +87,16 @@ def main():
     # scene.append(Sphere(radius=1., position=(0, 0, 0)))
     # scene.append(Sphere(radius=2., position=(4, 5, 0)))
     scene.append(Sphere(radius=2., position=[-1.5, 0., 5], colour=[1, 0, 0]))
-    scene.append(Sphere(radius=2., position=[1.5, 0., 6], colour=[0, 1, 0]))
-    scene.append(Cylinder(radius=2., position=[0., 0., 4], height=1., colour=[0, 0, 1]))
+    scene.append(Sphere(radius=2., position=[3., 0., 7], colour=[0, 1, 0]))
+    scene.append(Cylinder(radius=1., position=[2., 2., 4], height=1., colour=[0, 0, 1]))
+    # scene.append(Cube(length=1., position=[1., 0., 3], colour=[0, 0, 1]))
     rt.set_scene(scene)
 
     # 2. Model sources of illumination
     # rt.light_sources = [Light(position=(1, 0, 0), colour=(1., 1., 1.))]
-    rt.light_sources = [Light(position=(-1, 0, 2), colour=(1., 1., 1.))]
-    rt.light_ambient = 0.02 * np.ones(3)
+    rt.light_sources = [Light(position=(-1, 0, 1), colour=(1., 1., 1.))]
+    rt.light_sources.append(Light(position=(-1, -3., 3.), colour=(.5, .5, .5)))
+    rt.light_ambient = 0.03 * np.ones(3)
 
     # 3. Trace a ray to find its intersection with the nearest surface
     # Select eye point and screen plane
