@@ -6,14 +6,21 @@ dimensions = (350, 350)
 canvas_size = (300, 300)
 canvas_height, canvas_width = canvas_size
 
-frame_buffer = np.ones(dimensions, dtype=np.uint8) * 255
+frame_buffer = np.zeros(dimensions, dtype=np.uint8)
+z_buffer = np.ones(dimensions, dtype=np.uint8) * np.inf
 
 
 def draw_pixel(x, y, intensity=1.):
     try:
-        frame_buffer[y, x] = (1.-intensity) * 255
+        frame_buffer[y, x] = intensity * 255
     except IndexError:
         print "Point out of canvas", (x, y)
+
+
+def draw_z_buffer(pt, *args, **kwargs):
+    if z_buffer[pt[1], pt[0]] < pt[2]:
+        z_buffer[pt[1], pt[0]] = pt[2]
+        draw_pixel(pt[0], pt[1], *args, **kwargs)
 
 
 def draw_bounding_box():

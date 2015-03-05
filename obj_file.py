@@ -1,4 +1,5 @@
 from operator import methodcaller
+import numpy as np
 
 
 class Obj(object):
@@ -28,11 +29,11 @@ def load(filename):
             if line[0] == 'v':
                 # vertex (x : float, y : float, z : float)
                 v = map(float, line[1:4])
-                curr_obj.vertices.append(v)
+                curr_obj.vertices.append(np.array(v))
             elif line[0] == 'vn':
                 # normal (x : float, y : float, z : float)
                 vn = map(float, line[1:4])
-                curr_obj.normals.append(vn)
+                curr_obj.normals.append(np.array(vn))
             elif line[0] == 's':
                 s_grp = line[1]
                 if s_grp == 'off' or s_grp == '0':
