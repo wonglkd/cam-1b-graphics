@@ -78,10 +78,11 @@ def main():
     # look_point = np.array([[0, 0, 1., 0]])
     # up_vector = np.array([[0, 1, 0, 0]])
 
+    camera_pos = np.array([[1., .3, 0, 0]])
+    look_point = np.array([[1., .3, 1., 0]])
+    up_vector = np.array([[0., 1., 0, 0]])
+
     # test values
-    camera_pos = np.array([[5, 10, 0, 0]])
-    look_point = np.array([[5, 10, 1, 0]])
-    up_vector = np.array([[5, 15, 1, 0]])
     m_matrix = gen_m_matrix(camera_pos, look_point, up_vector, d)
     print m_matrix
 
