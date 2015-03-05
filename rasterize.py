@@ -12,18 +12,28 @@ import triangle
 import numpy as np
 import math
 from pprint import pprint
+from primitives import Vector
 
 
-def rasterize_triangle(face, m_matrix=None):
+def rasterize_triangle(face, m_matrix=None, light=None):
     vertices = [v for v, _ in face]
+    normals = [vn for _, vn in face]
     # perspective
     if m_matrix is not None:
         vertices = map(lambda v: m_matrix.dot(np.append(v, [0])), vertices)
+        vertices = [v[:3] for v in vertices]
+
+    # Basic shading
+    v_ab = vertices[1] - vertices[0]
+    v_ac = vertices[2] - vertices[0]
+    v_n = Vector(np.cross(v_ab, v_ac)).normalized().direction
+    centroid = np.mean(vertices, axis=0)
+    diffuse_intensity = v_n.dot(Vector(light - centroid).normalized().direction)
 
     # projection onto 2D - strip z value
     vertices = [v[:2] for v in vertices]
     vertices = map(screen.rescale_point, vertices)
-    triangle.draw(vertices, wireframe=True)
+    triangle.draw(vertices, wireframe=False, shading=diffuse_intensity)
 
 
 def gen_m_matrix(camera_pos, look_point, up_vector, d):
@@ -79,13 +89,16 @@ def main():
     m_matrix = gen_m_matrix(camera_pos, look_point, up_vector, d)
     print m_matrix
 
+    light_pos = np.array([2., 1., 0.])
+    light_pos_t = m_matrix.dot(np.append(light_pos, [0]))[:3]
+
     screen.draw_bounding_box()
 
     obj = obj_file.load('SV1-utah/wt_teapot.obj')['teapot.005']
     for face in obj.faces:
         try:
             n_face = [(obj.vertices[v], obj.normals[vn]) for v, vn in face]
-            rasterize_triangle(n_face, m_matrix=m_matrix)
+            rasterize_triangle(n_face, m_matrix=m_matrix, light=light_pos_t)
         except IndexError:
             print "cannot find vertex ",
             pprint(face)

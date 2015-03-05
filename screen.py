@@ -9,9 +9,9 @@ canvas_height, canvas_width = canvas_size
 frame_buffer = np.ones(dimensions, dtype=np.uint8) * 255
 
 
-def draw_pixel(x, y):
+def draw_pixel(x, y, intensity=1.):
     try:
-        frame_buffer[y, x] = 0
+        frame_buffer[y, x] = (1.-intensity) * 255
     except IndexError:
         print "Point out of canvas", (x, y)
 

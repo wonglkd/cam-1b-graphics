@@ -3,7 +3,7 @@ import line
 import numpy as np
 
 
-def draw(vertices, wireframe=False):
+def draw(vertices, wireframe=False, shading=1.):
     v1, v2, v3 = vertices
     vs1 = v2[0]-v1[0], v2[1]-v1[1]
     vs2 = v3[0]-v1[0], v3[1]-v1[1]
@@ -29,4 +29,4 @@ def draw(vertices, wireframe=False):
             n2 = float(np.cross(vs1, v)) / np.cross(vs1, vs2)
 
             if n1 >= 0 and n2 >= 0 and n1 + n2 <= 1:
-                screen.draw_pixel(i, j)
+                screen.draw_pixel(i, j, shading)
