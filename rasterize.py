@@ -17,14 +17,13 @@ from pprint import pprint
 def rasterize_triangle(face, m_matrix=None):
     vertices = [v for v, _ in face]
     # perspective
-    # strip z value
     if m_matrix is not None:
-        # vertices = map()
         vertices = map(lambda v: m_matrix.dot(np.append(v, [0])), vertices)
-    # else:
-        vertices = [v[:2] for v in vertices]
+
+    # projection onto 2D - strip z value
+    vertices = [v[:2] for v in vertices]
     vertices = map(screen.rescale_point, vertices)
-    triangle.draw(vertices)
+    triangle.draw(vertices, wireframe=True)
 
 
 def gen_m_matrix(camera_pos, look_point, up_vector, d):
@@ -80,7 +79,7 @@ def main():
     m_matrix = gen_m_matrix(camera_pos, look_point, up_vector, d)
     print m_matrix
 
-
+    screen.draw_bounding_box()
 
     obj = obj_file.load('SV1-utah/wt_teapot.obj')['teapot.005']
     for face in obj.faces:

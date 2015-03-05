@@ -1,17 +1,19 @@
 import screen
 import line
+import numpy as np
 
 
-def draw(vertices):
+def draw(vertices, wireframe=False):
     v1, v2, v3 = vertices
     vs1 = v2[0]-v1[0], v2[1]-v1[1]
     vs2 = v3[0]-v1[0], v3[1]-v1[1]
 
-    # for v in vertices:
-    #     screen.draw_pixel(*v)
-    for v, u in zip(vertices, vertices[1:] + [vertices[0]]):
-        line.draw(v, u)
-    return
+    if wireframe:
+        for v in vertices:
+            screen.draw_pixel(*v)
+        for v, u in zip(vertices, vertices[1:] + [vertices[0]]):
+            line.draw(v, u)
+        return
 
     # calculate bounding box
     max_x = int(max(v[0] for v in vertices))
