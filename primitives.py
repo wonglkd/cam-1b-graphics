@@ -9,7 +9,7 @@ class PhysicalObject(object):
     def __init__(self,
                  position,
                  colour,
-                 reflection=.5,
+                 reflection=.25,
                  specular=1.,
                  diffuse=1.):
         self.pos = np.asarray(position)

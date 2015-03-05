@@ -24,7 +24,7 @@ class RayTracer(object):
         for obj in self.scene:
             s_intersect = obj.intersect(ray)
             # if intersection point is closest so far to the eye, save it
-            if s_intersect < s_closest_intersection:
+            if s_intersect < s_closest_intersection and s_intersect > 0.00001:
                 s_closest_intersection = s_intersect
                 closest_obj = obj
 
@@ -48,7 +48,7 @@ class RayTracer(object):
             intersect_light_length = ray_intersect_light.length()
             ray_intersect_light = ray_intersect_light.normalized()
 
-            # Check for shadows
+            """ Shadows """
             s_other_objs = [obj.intersect(ray_intersect_light)
                             for obj in self.scene if obj != closest_obj]
             # Remove objects that are behind
@@ -59,6 +59,11 @@ class RayTracer(object):
 
             v_i = ray_intersect_light.direction
             v_n = norm_at_intersect.direction
+
+            # Make sure that we are not hitting back of object
+            if v_n.dot(v_i) < 0:
+                continue
+
             """ calculate diffuse reflections off objects at that point """
             intensity_diffuse = v_n.dot(v_i)
             intensity_diffuse = max(intensity_diffuse, 0.)
@@ -82,15 +87,20 @@ class RayTracer(object):
         pt_colour = np.zeros(3)
         curr_ray = orig_ray
         reflection_idx = 1.
-        for _ in xrange(n_reflections):
+        for i in xrange(n_reflections):
             # trace ray
             r_result = self.trace_ray(curr_ray)
             if r_result is None:
                 break
             r_colour, closest_obj, reflected_ray = r_result
+            if i > 0:
+                print i, closest_obj
+                print curr_ray
+                print reflected_ray
             pt_colour += r_colour * reflection_idx
             reflection_idx *= closest_obj.coef_reflection
             curr_ray = reflected_ray
+            # break
 
         return pt_colour
 
@@ -102,8 +112,8 @@ def main():
     scene = []
     # scene.append(Sphere(radius=1., position=(0, 0, 0)))
     # scene.append(Sphere(radius=2., position=(4, 5, 0)))
-    scene.append(Sphere(radius=2., position=[-1.5, 0., 5], colour=[1, 0, 0]))
-    scene.append(Sphere(radius=2., position=[3., 0., 7], colour=[0, 1, 0]))
+    # scene.append(Sphere(radius=2., position=[-1.5, 0., 5], colour=[1, 0, 0]))
+    # scene.append(Sphere(radius=2., position=[2., 0., 9], colour=[0, 1, 0]))
     scene.append(Cylinder(radius=1., position=[2., 2., 4], height=1., colour=[0, 0, 1]))
     # scene.append(Cube(length=1., position=[1., 0., 3], colour=[0, 0, 1]))
     rt.set_scene(scene)
@@ -112,7 +122,7 @@ def main():
     # rt.light_sources = [Light(position=(1, 0, 0), colour=(1., 1., 1.))]
     rt.light_sources = [Light(position=(-1, 0, 1), colour=(1., 1., 1.))]
     rt.light_sources.append(Light(position=(-1, -3., 3.), colour=(.5, .5, .5)))
-    rt.light_ambient = 0.03 * np.ones(3)
+    rt.light_ambient = 0.05 * np.ones(3)
 
     # 3. Trace a ray to find its intersection with the nearest surface
     # Select eye point and screen plane
