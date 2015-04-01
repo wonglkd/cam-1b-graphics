@@ -4,18 +4,17 @@ import numpy as np
 from common import normalize
 
 
-def draw(vertices, wireframe=False, shading=1., shadings=None):
+def draw_wireframe(vertices):
+    for v in vertices:
+        screen.draw_pixel(v[:2])
+    for v, u in zip(vertices, vertices[1:] + [vertices[0]]):
+        line.draw(v[:2], u[:2])
+
+
+def draw_barycentric(vertices, shading=1., shadings=None):
     v1, v2, v3 = vertices
-    vs1 = v2[0]-v1[0], v2[1]-v1[1]
-    vs2 = v3[0]-v1[0], v3[1]-v1[1]
-
-    if wireframe:
-        for v in vertices:
-            screen.draw_pixel(v[:2])
-        for v, u in zip(vertices, vertices[1:] + [vertices[0]]):
-            line.draw(v[:2], u[:2])
-        return
-
+    vs1 = v2[0] - v1[0], v2[1] - v1[1]
+    vs2 = v3[0] - v1[0], v3[1] - v1[1]
     # calculate bounding box
     max_x = int(max(v[0] for v in vertices))
     min_x = int(min(v[0] for v in vertices))
@@ -38,3 +37,10 @@ def draw(vertices, wireframe=False, shading=1., shadings=None):
                         shading += dist/sum(dists) * shade
                     # print dists, shadings, shading
                 screen.draw_pixel(i, j, shading)
+
+
+def draw(vertices, wireframe=False, *args, **kwargs):
+    if wireframe:
+        draw_wireframe(vertices)
+    else:
+        draw_barycentric(vertices, *args, **kwargs)
