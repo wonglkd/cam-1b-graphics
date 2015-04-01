@@ -1,6 +1,7 @@
 import screen
 import line
 import numpy as np
+from common import normalize
 
 
 def draw(vertices, wireframe=False, shading=1.):

@@ -1,7 +1,10 @@
 
 EXEC_PREFIX = python
 
-all: SV1-utah/teapot.png SV2-curves/bezier.png SV3-raytracer/raytracer.png
+all: sv1 sv2 sv3
+sv1: SV1-utah/teapot.png
+sv2: SV2-curves/bezier.png
+sv3: SV3-raytracer/raytracer.png
 
 test:
 	py.test

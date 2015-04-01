@@ -13,6 +13,7 @@ import numpy as np
 import math
 from pprint import pprint
 from primitives import Vector
+from common import normalize
 
 
 def rasterize_triangle(face, m_matrix=None, light=None):

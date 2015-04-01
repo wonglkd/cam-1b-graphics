@@ -1,8 +1,5 @@
 import numpy as np
-
-
-def normalize(vector):
-    return np.linalg.norm(vector)
+from common import normalize
 
 
 class PhysicalObject(object):
