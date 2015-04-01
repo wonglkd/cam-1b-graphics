@@ -4,16 +4,16 @@ import numpy as np
 from common import normalize
 
 
-def draw(vertices, wireframe=False, shading=1.):
+def draw(vertices, wireframe=False, shading=1., shadings=None):
     v1, v2, v3 = vertices
     vs1 = v2[0]-v1[0], v2[1]-v1[1]
     vs2 = v3[0]-v1[0], v3[1]-v1[1]
 
     if wireframe:
         for v in vertices:
-            screen.draw_pixel(*v)
+            screen.draw_pixel(v[:2])
         for v, u in zip(vertices, vertices[1:] + [vertices[0]]):
-            line.draw(v, u)
+            line.draw(v[:2], u[:2])
         return
 
     # calculate bounding box
@@ -30,4 +30,11 @@ def draw(vertices, wireframe=False, shading=1.):
             n2 = float(np.cross(vs1, v)) / np.cross(vs1, vs2)
 
             if n1 >= 0 and n2 >= 0 and n1 + n2 <= 1:
+                if shadings:
+                    pt = np.array([i, j])
+                    dists = [normalize(v[:2] - pt) for v in vertices]
+                    shading = 0.
+                    for dist, shade in zip(dists, shadings):
+                        shading += dist/sum(dists) * shade
+                    # print dists, shadings, shading
                 screen.draw_pixel(i, j, shading)

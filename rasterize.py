@@ -23,14 +23,18 @@ def rasterize_triangle(face, m_matrix=None, light=None):
     v_ab = vertices[1] - vertices[0]
     v_ac = vertices[2] - vertices[0]
     v_n = Vector(np.cross(v_ab, v_ac)).normalized().direction
-    centroid = np.mean(vertices, axis=0)
-    diffuse_intensity = max(0, v_n.dot(Vector(light - centroid).normalized().direction))
+    # centroid = np.mean(vertices, axis=0)
+
+    diffuse_intensities = [max(0, v_n.dot(Vector(light - v).normalized().direction))
+                           for v, vn in face]
+    # diffuse_intensity = max(0, v_n.dot(Vector(light - centroid).normalized().direction))
 
     # projection onto 2D - strip z value
-    vertices = [v[:2] for v in vertices]
+    # vertices = [v[:2] for v in vertices]
     vertices = map(screen.rescale_point, vertices)
     # triangle.draw(vertices, wireframe=True)
-    triangle.draw(vertices, wireframe=False, shading=diffuse_intensity)
+    # triangle.draw(vertices, wireframe=False, shading=diffuse_intensity)
+    triangle.draw(vertices, wireframe=False, shadings=diffuse_intensities)
 
 
 def gen_m_matrix(camera_pos, look_point, up_vector, d):
@@ -84,10 +88,14 @@ def main():
     up_vector = np.array([[0., 1., 0, 0]])
 
     # test values
+    # camera_pos = np.array([[1, -2, 0, 0]])
+    # look_point = np.array([[1, -2, 1, 0]])
+    # up_vector = np.array([[3, 3, 1, 0]])
     m_matrix = gen_m_matrix(camera_pos, look_point, up_vector, d)
     print m_matrix
 
     light_pos = np.array([5., 4., -4.])
+    # light_pos = np.array([1., .3, 1.])
     light_pos_t = m_matrix.dot(np.append(light_pos, [0]))[:3]
 
     screen.draw_bounding_box()
