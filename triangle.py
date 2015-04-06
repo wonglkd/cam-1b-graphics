@@ -84,14 +84,14 @@ def draw_rec(vertices, shading_func, *args, **kwargs):
             raise RuntimeError
 
 
-def interpolate(v, vertices):
+def get_barycentric_coords(v, vertices):
     v = np.asarray(v)
     v1, v2, v3 = vertices
     T = np.matrix([[v1[0] - v3[0], v2[0] - v3[0]],
                   [v1[1] - v3[1], v2[1] - v3[1]]])
     sol = T.I * np.matrix(v - vertices[2][:2]).T
     sol = np.array(sol).ravel().tolist() + [1. - sol.sum()]
-    np.clip(sol, 0., 1.)
+    sol = np.clip(sol, 0., 1.)
     return sol
 
 
@@ -104,7 +104,7 @@ def draw(vertices, wireframe=False, shading=1., shadings=None, *args, **kwargs):
                 pt = np.array(u)
                 dists = [normalize(v[:2] - pt) for v in vertices]
                 l_shading = 0.
-                weights = interpolate(pt, vertices)
+                weights = get_barycentric_coords(pt, vertices)
                 for weight, shade in zip(weights, shadings):
                     l_shading += weight/sum(weights) * shade
                 return l_shading
