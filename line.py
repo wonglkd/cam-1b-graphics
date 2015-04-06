@@ -36,9 +36,9 @@ def draw(u, v, shading_func=lambda v: 1):
             if e2 < d_x:
                 err += d_x
                 y_0 += s_y
-    except ValueError:
+    except IndexError:
         print "Failed to draw line ", u, v
-        raise ValueError
+        raise RuntimeError
 
 
 def draw_b(v, u):

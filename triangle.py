@@ -78,10 +78,21 @@ def draw_rec(vertices, shading_func, *args, **kwargs):
         try:
             draw_rec_bottomflat([v1, v2, v4], shading_func)
             draw_rec_topflat([v2, v4, v3], shading_func)
-        except ValueError:
+        except RuntimeError:
             print([v1, v2, v4])
             print v4
-            raise ValueError
+            raise RuntimeError
+
+
+def interpolate(v, vertices):
+    v = np.asarray(v)
+    v1, v2, v3 = vertices
+    T = np.matrix([[v1[0] - v3[0], v2[0] - v3[0]],
+                  [v1[1] - v3[1], v2[1] - v3[1]]])
+    sol = T.I * np.matrix(v - vertices[2][:2]).T
+    sol = np.array(sol).ravel().tolist() + [1. - sol.sum()]
+    np.clip(sol, 0., 1.)
+    return sol
 
 
 def draw(vertices, wireframe=False, shading=1., shadings=None, *args, **kwargs):
@@ -89,19 +100,18 @@ def draw(vertices, wireframe=False, shading=1., shadings=None, *args, **kwargs):
         draw_wireframe(vertices)
     else:
         if shadings:
-            def shading_func((i, j)):
-                pt = np.array([i, j])
+            def shading_func(u):
+                pt = np.array(u)
                 dists = [normalize(v[:2] - pt) for v in vertices]
-                shading = 0.
-                for dist, shade in zip(dists, shadings):
-                    # shading += (1. - dist/sum(dists)) * shade
-                    shading += dist/sum(dists) * shade
-                # print dists, shadings, shading
-                return shading
+                l_shading = 0.
+                weights = interpolate(pt, vertices)
+                for weight, shade in zip(weights, shadings):
+                    l_shading += weight/sum(weights) * shade
+                return l_shading
         else:
             shading_func = lambda _: shading
         try:
             draw_rec(vertices, shading_func)
             # draw_barycentric(vertices, shading_func, *args, **kwargs)
-        except ValueError:
+        except RuntimeError:
             print "Failed to draw triangle ", vertices

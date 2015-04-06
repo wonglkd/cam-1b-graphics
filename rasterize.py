@@ -22,12 +22,12 @@ def rasterize_triangle(face, m_matrix=None, light=None):
     # Basic shading
     v_ab = vertices[1] - vertices[0]
     v_ac = vertices[2] - vertices[0]
-    v_n = Vector(np.cross(v_ab, v_ac)).normalized().direction
+    # v_n = Vector(np.cross(v_ab, v_ac)).normalized()
     # centroid = np.mean(vertices, axis=0)
 
-    diffuse_intensities = [max(0, v_n.dot(Vector(light - v).normalized().direction))
-                           for v, vn in face]
-    # diffuse_intensity = max(0, v_n.dot(Vector(light - centroid).normalized().direction))
+    # diffuse_intensity = max(0, v_n.dot(Vector(light - centroid).normalized()))
+    diffuse_intensities = [max(0, Vector(v_n).normalized().dot(Vector(light - v).normalized()))
+                           for v, v_n in face]
 
     # projection onto 2D - strip z value
     # vertices = [v[:2] for v in vertices]
