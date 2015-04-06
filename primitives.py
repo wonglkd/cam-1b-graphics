@@ -35,6 +35,9 @@ class Vector(object):
         self.direction /= self.length()
         return self
 
+    def dot(self, v):
+        return self.direction.dot(v.direction)
+
     def __repr__(self):
         return 'Vector(direction={}'.format(self.direction)
 

@@ -13,7 +13,7 @@ def is_flat(pt_a, pt_b, pt_c, tolerance=.5):
     return np.linalg.norm(v_cp) < tolerance
 
 
-def draw(u, v):
+def draw(u, v, shading_func=lambda v: 1):
     """ Placeholder, to replace with draw_midpoint once that is debugged. """
     u = map(int, u[:2])
     v = map(int, v[:2])
@@ -26,7 +26,7 @@ def draw(u, v):
     err = d_x - d_y
     try:
         while True:
-            screen.draw_pixel(x_0, y_0)
+            screen.draw_pixel(x_0, y_0, shading_func((x_0, y_0)))
             if x_0 == x_1 and y_0 == y_1:
                 break
             e2 = 2 * err
