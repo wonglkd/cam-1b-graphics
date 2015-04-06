@@ -15,6 +15,7 @@ def draw_pixel(x, y, intensity=1.):
         frame_buffer[y, x] = intensity * 255
     except IndexError:
         print "Point out of canvas", (x, y)
+        raise ValueError
 
 
 def draw_z_buffer(pt, *args, **kwargs):

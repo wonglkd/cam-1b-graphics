@@ -6,7 +6,7 @@ from common import normalize
 
 def draw_wireframe(vertices):
     for v in vertices:
-        screen.draw_pixel(v[:2])
+        screen.draw_pixel(*v[:2])
     for v, u in zip(vertices, vertices[1:] + [vertices[0]]):
         line.draw(v[:2], u[:2])
 
@@ -38,9 +38,63 @@ def draw_barycentric(vertices, shading=1., shadings=None):
                     # print dists, shadings, shading
                 screen.draw_pixel(i, j, shading)
 
+def draw_rec_bottomflat(vertices):
+    v1, v2, v3 = vertices
+    invslope1 = (v2[0] - v1[0]) / float(v2[1] - v1[1])
+    invslope2 = (v3[0] - v1[0]) / float(v3[1] - v1[1])
+
+    curr_x1, curr_x2 = float(v1[0]), float(v1[0])
+    for scan_y in xrange(int(v1[1]), int(v2[1] + 1)):
+        line.draw((curr_x1, scan_y), (curr_x2, scan_y))
+        curr_x1 += invslope1
+        curr_x2 += invslope2
+
+
+def draw_rec_topflat(vertices):
+    v1, v2, v3 = vertices
+    invslope1 = (v3[0] - v1[0]) / float(v3[1] - v1[1])
+    invslope2 = (v3[0] - v2[0]) / float(v3[1] - v2[1])
+
+    curr_x1, curr_x2 = float(v3[0]), float(v3[0])
+    for scan_y in xrange(int(v3[1]), int(v1[1]), -1):
+        curr_x1 -= invslope1
+        curr_x2 -= invslope2
+        line.draw((curr_x1, scan_y), (curr_x2, scan_y))
+
+
+def draw_rec(vertices, *args, **kwargs):
+    vertices = sorted(vertices, key=lambda x: x[1])
+    vertices = [map(int, v) for v in vertices]
+    v1, v2, v3 = vertices
+    if v2[1] == v3[1]:
+        if v1[1] == v2[1]:
+            # collinear
+            line.draw(v1, v2)
+            line.draw(v2, v3)
+            line.draw(v1, v3)
+        else:
+            draw_rec_bottomflat(vertices)
+    elif v1[1] == v2[1]:
+        draw_rec_topflat(vertices)
+    else:
+        v4 = (v1[0] + (v2[1] - v1[1]) / float(v3[1] - v1[1]) * (v3[0] - v1[0]),
+              v2[1])
+        v4 = map(int, v4)
+        try:
+            draw_rec_bottomflat([v1, v2, v4])
+            draw_rec_topflat([v2, v4, v3])
+        except ValueError:
+            print([v1, v2, v4])
+            print v4
+            raise ValueError
+
 
 def draw(vertices, wireframe=False, *args, **kwargs):
     if wireframe:
         draw_wireframe(vertices)
     else:
-        draw_barycentric(vertices, *args, **kwargs)
+        try:
+            draw_rec(vertices, *args, **kwargs)
+            # draw_barycentric(vertices, *args, **kwargs)
+        except ValueError:
+            print "Failed to draw triangle ", vertices

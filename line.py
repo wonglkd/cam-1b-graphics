@@ -15,6 +15,8 @@ def is_flat(pt_a, pt_b, pt_c, tolerance=.5):
 
 def draw(u, v):
     """ Placeholder, to replace with draw_midpoint once that is debugged. """
+    u = map(int, u[:2])
+    v = map(int, v[:2])
     x_0, y_0 = map(int, u)
     x_1, y_1 = map(int, v)
     d_x = abs(x_1 - x_0)
@@ -22,17 +24,21 @@ def draw(u, v):
     s_x = 1 if x_0 < x_1 else -1
     s_y = 1 if y_0 < y_1 else -1
     err = d_x - d_y
-    while True:
-        screen.draw_pixel(x_0, y_0)
-        if x_0 == x_1 and y_0 == y_1:
-            break
-        e2 = 2 * err
-        if e2 > -d_y:
-            err -= d_y
-            x_0 += s_x
-        if e2 < d_x:
-            err += d_x
-            y_0 += s_y
+    try:
+        while True:
+            screen.draw_pixel(x_0, y_0)
+            if x_0 == x_1 and y_0 == y_1:
+                break
+            e2 = 2 * err
+            if e2 > -d_y:
+                err -= d_y
+                x_0 += s_x
+            if e2 < d_x:
+                err += d_x
+                y_0 += s_y
+    except ValueError:
+        print "Failed to draw line ", u, v
+        raise ValueError
 
 
 def draw_b(v, u):
