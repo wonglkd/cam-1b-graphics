@@ -16,7 +16,7 @@ from primitives import Vector
 from common import normalize
 
 
-def rasterize_triangle(face, m_matrix=None, light=None):
+def rasterize_triangle(face, m_matrix=None, light=None, *args, **kwargs):
     vertices = [np.array(v) for v, _ in face]
     normals = [np.array(vn) for _, vn in face]
     # Basic shading
@@ -34,7 +34,7 @@ def rasterize_triangle(face, m_matrix=None, light=None):
     vertices = map(screen.rescale_point, vertices)
     # triangle.draw(vertices, wireframe=True)
     # triangle.draw(vertices, wireframe=False, shading=diffuse_intensity)
-    triangle.draw(vertices, wireframe=False, shadings=diffuse_intensities)
+    triangle.draw(vertices, normals, wireframe=False, shadings=diffuse_intensities, light_pt=light, *args, **kwargs)
 
 
 def gen_m_matrix(camera_pos, look_point, up_vector, d):
@@ -79,8 +79,12 @@ def gen_m_matrix(camera_pos, look_point, up_vector, d):
 def main():
     # d = distance from origin to screen centre
     d = 1.
-    # camera_pos = np.array([[0, 0, 0, 0]])
-    # look_point = np.array([[0, 0, 1., 0]])
+    camera_pos = np.array([[0, 0, 0, 0]])
+    look_point = np.array([[0, 0, 1., 0]])
+    up_vector = np.array([[0, 1, 0, 0]])
+
+    # camera_pos = np.array([[0, 0, -1, 0]])
+    # look_point = np.array([[.2, .2, 1.1, 0]])
     # up_vector = np.array([[0, 1, 0, 0]])
 
     camera_pos = np.array([[1., .3, 0, 0]])
@@ -94,13 +98,16 @@ def main():
     m_matrix = gen_m_matrix(camera_pos, look_point, up_vector, d)
     print m_matrix
 
+    # light_pos = np.array([0., 0., -1.])
     light_pos = np.array([5., 4., -4.])
     # light_pos = np.array([1., .3, 1.])
     light_pos_t = m_matrix.dot(np.append(light_pos, [0]))[:3]
+    camera_pos_t = m_matrix.dot(camera_pos.T)[:3]
 
     screen.draw_bounding_box()
 
     obj = obj_file.load('SV1-utah/wt_teapot.obj')['teapot.005']
+    # obj = obj_file.load('SV1-utah/cube.obj')['Cube']
     obj.vertices = [m_matrix.dot(np.append(v, [0]))[:3] for v in obj.vertices]
     obj.normals = [m_matrix.dot(np.append(v, [0]))[:3] for v in obj.normals]
 
@@ -109,14 +116,14 @@ def main():
     for face in obj.faces:
         try:
             n_face = [(obj.vertices[v], obj.normals[vn]) for v, vn in face]
-            rasterize_triangle(n_face, m_matrix=m_matrix, light=light_pos_t)
+            rasterize_triangle(n_face, m_matrix=m_matrix, light=light_pos_t, view_pt=camera_pos_t)
         except IndexError:
             print "cannot find vertex ",
             pprint(face)
         # draw_triangle([a for a, _ in face])
-        # draw_triangle([(1,1),(300,400),(500,400)])
-        # draw_triangle([(10+5, 10+10),(10+5,50+10),(10+50,10+10)])
-        # draw_triangle([(50, 50),(50+50,50),(50,50+50)])
+        # triangle.draw([(1,1),(300,400),(500,400)])
+        # triangle.draw([(10+5, 10+10),(10+5,50+10),(10+50,10+10)])
+        # triangle.draw([(50, 50),(50+50,50),(50,50+50)])
         # break
 
     screen.write('SV1-utah/teapot.png')

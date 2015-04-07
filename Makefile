@@ -9,7 +9,7 @@ sv3: SV3-raytracer/raytracer.png
 test:
 	py.test
 
-SV1-utah/teapot.png: rasterize.py triangle.py screen.py line.py
+SV1-utah/teapot.png: rasterize.py triangle.py screen.py line.py shaders.py
 	$(EXEC_PREFIX) $^
 
 SV2-curves/bezier.png: midpoint.py

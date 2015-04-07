@@ -2,6 +2,7 @@ import screen
 import line
 import numpy as np
 from common import normalize
+from shaders import specular
 
 
 def draw_wireframe(vertices):
@@ -95,7 +96,7 @@ def get_barycentric_coords(v, vertices):
     return sol
 
 
-def draw(vertices, wireframe=False, shading=1., shadings=None, *args, **kwargs):
+def draw(vertices, normals=None, wireframe=False, shading=1., shadings=None, *args, **kwargs):
     if wireframe:
         draw_wireframe(vertices)
     else:
@@ -107,11 +108,18 @@ def draw(vertices, wireframe=False, shading=1., shadings=None, *args, **kwargs):
                 weights = get_barycentric_coords(pt, vertices)
                 for weight, shade in zip(weights, shadings):
                     l_shading += weight/sum(weights) * shade
-                return l_shading
+                if normals:
+                    z = sum(w * v[2] for w, v in zip(weights, vertices))
+                    v_n = np.zeros(3)
+                    for weight, normal in zip(weights, normals):
+                        v_n += weight * normal
+                    s_specular = specular(np.array(list(u) + [z]), v_n, kwargs['view_pt'], kwargs['light_pt'])
+                    l_shading += .5 * np.clip(s_specular, 0, 1)
+                return np.clip(l_shading, 0, 1)
         else:
             shading_func = lambda _: shading
         try:
             draw_rec(vertices, shading_func)
-            # draw_barycentric(vertices, shading_func, *args, **kwargs)
+            # draw_barycentric(vertices, shading_func)
         except RuntimeError:
             print "Failed to draw triangle ", vertices
